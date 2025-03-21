@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三角洲游戏改枪码分享平台</title>
+  <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/remixicon/2.5.0/remixicon.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* 基础样式 */
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      --card-shadow-hover: 0 20px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background-color: #1f2937;
+      background-color: #f9fafb;
+      background-image: radial-gradient(circle at 25px 25px, rgba(59, 130, 246, 0.1) 2%, transparent 0%),
+                        radial-gradient(circle at 75px 75px, rgba(59, 130, 246, 0.05) 2%, transparent 0%);
+      background-size: 100px 100px;
+      color: #111827;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .dark-mode {
+      background-color: #1f2937;
+      color: #f3f4f6;
+    }
+    
+    .bg-white {
+      background-color: #ffffff;
+    }
+    
+    .dark-mode .bg-white {
+      background-color: #374151;
+    }
+    
+    .text-gray-800 {
+      color: #111827;
+    }
+    
+    .dark-mode .text-gray-800 {
+      color: #f3f4f6;
+    }
+    
+    /* 卡片样式 */
+    .gun-card {
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .dark-mode .gun-card {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .gun-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--card-shadow-hover);
+    }
+    
+    .gun-card .card-content { padding: 1.25rem; }
+    
+    .gun-card .card-footer {
+      padding: 0.75rem 1.25rem;
+      background: rgba(243, 244, 246, 0.7);
+      border-top: 1px solid rgba(229, 231, 235, 0.8);
+    }
+    
+    /* 枪械标签 */
+    .gun-type-tag {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(37, 99, 235, 0.85);
+      color: white;
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      letter-spacing: 0.5px;
+      transform: translateY(0);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .gun-card:hover .gun-type-tag {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .gun-type-tag i { margin-right: 0.35rem; }
+    
+    /* 下拉菜单样式修复 */
+    .categories-dropdown {
+      position: relative;
+      display: inline-block;
+      z-index: 999;  /* 增加z-index确保显示在最上层 */
+    }
+    
+    .categories-toggle {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 0.6rem 1.25rem;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    }
+    
+    .categories-toggle:hover {
+      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+    }
+    
+    .categories-toggle i {
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .categories-toggle.active i {
+      transform: rotate(180deg);
+    }
+    
+    /* 修复菜单显示问题 */
+    .categories-menu {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      left: 0;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      padding: 0.75rem;
+      min-width: 220px;
+      display: none;  /* 默认不显示 */
+      z-index: 1000;  /* 确保显示在最上层 */
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+    
+    .categories-menu.show {
+      display: block;  /* 简化显示逻辑 */
+    }
+    
+    .categories-menu button {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.5rem;
+      text-align: left;
+      transition: all 0.15s ease;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+      color: #4b5563;
+    }
+    
+    .categories-menu button:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .categories-menu button.active {
+      background-color: #eff6ff;
+      color: #2563eb;
+      font-weight: 500;
+    }
+    
+    .categories-menu button i {
+      margin-right: 0.5rem;
+      font-size: 1.125rem;
+      color: #6b7280;
+    }
+    
+    .categories-menu button.active i {
+      color: #2563eb;
+    }
+    
+    /* 背景遮罩修复 */
+    .categories-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 990;  /* 低于菜单但高于其他内容 */
+      display: none;
+    }
+    
+    .categories-backdrop.show {
+      display: block;
+    }
+    
+    /* 作者信息 */
+    .author-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .author-info .avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 9999px;
+      object-fit: cover;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      border: 2px solid white;
+    }
+    
+    .author-details {
+      margin-left: 0.75rem;
+      flex: 1;
+    }
+    
+    .author-name {
+      font-weight: 500;
+      color: #111827;
+    }
+    
+    .author-rank {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    
+    .follow-btn {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 0.5rem;
+      background-color: #f3f4f6;
+      color: #4b5563;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    
+    .follow-btn:hover {
+      background-color: #e5e7eb;
+    }
+    
+    /* 枪械性能参数 */
+    .gun-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    
+    .gun-stat-item {
+      text-align: center;
+      flex: 1;
+      padding: 0.5rem;
+      background: #f9fafb;
+      border-radius: 0.5rem;
+      margin: 0 0.25rem;
+    }
+    
+    .gun-stat-item .value {
+      font-weight: 700;
+      color: #111827;
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+    
+    .gun-stat-item .label {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    
+    /* 复制按钮样式 */
+    .copy-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      border-radius: 0.5rem;
+      background-color: var(--primary);
+      color: white;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    
+    .copy-btn i {
+      margin-right: 0.25rem;
+    }
+    
+    .copy-btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    /* 移动端优化 */
+    @media (max-width: 640px) {
+      .categories-menu {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        border-radius: 1rem 1rem 0 0;
+        transform: none;
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+      
+      .gun-stats {
+        flex-direction: column;
+      }
+      
+      .gun-stat-item {
+        margin: 0.25rem 0;
+      }
+    }
+    
+    /* 美化排序下拉菜单 */
+    .sort-dropdown {
+      position: relative;
+      z-index: 990; /* 低于分类菜单，但高于其他元素 */
+    }
+    
+    .sort-toggle {
+      display: flex;
+      align-items: center;
+      background: white;
+      color: #4b5563;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+    
+    .sort-toggle:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: rgba(209, 213, 219, 0.9);
+    }
+    
+    .sort-toggle i.icon {
+      color: var(--primary);
+      margin-right: 0.5rem;
+      font-size: 1.125rem;
+    }
+    
+    .sort-toggle i.arrow {
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+      color: #9ca3af;
+    }
+    
+    .sort-toggle.active {
+      background-color: #f9fafb;
+      border-color: #e5e7eb;
+    }
+    
+    .sort-toggle.active i.arrow {
+      transform: rotate(180deg);
+    }
+    
+    .sort-menu {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 0.5rem;
+      min-width: 180px;
+      display: none;
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+    
+    .sort-menu.show {
+      display: block;
+    }
+    
+    .sort-menu button {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      text-align: left;
+      transition: all 0.15s ease;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+      color: #4b5563;
+    }
+    
+    .sort-menu button:last-child {
+      margin-bottom: 0;
+    }
+    
+    .sort-menu button:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .sort-menu button.active {
+      background-color: #eff6ff;
+      color: #2563eb;
+      font-weight: 500;
+    }
+    
+    .sort-menu button i {
+      margin-right: 0.5rem;
+      color: #9ca3af;
+    }
+    
+    .sort-menu button.active i {
+      color: #2563eb;
+    }
+    
+    /* 确保在移动端上也美观 */
+    @media (max-width: 640px) {
+      .sort-toggle {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.875rem;
+      }
+      
+      .sort-toggle i.icon {
+        font-size: 1rem;
+      }
+    }
+    
+    /* 添加卡片社交统计UI样式 */
+    .social-stats {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 6px;
+      color: #64748b;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .stat-item:hover {
+      background-color: #f1f5f9;
+      color: #334155;
+    }
+    
+    .stat-item i {
+      font-size: 1.125rem;
+      margin-right: 5px;
+      transition: all 0.2s ease;
+    }
+    
+    .stat-item:hover i {
+      transform: scale(1.15);
+    }
+    
+    /* 不同类型的统计项样式 */
+    .stat-download i {
+      color: #0ea5e9;
+    }
+    
+    .stat-like i {
+      color: #f43f5e;
+    }
+    
+    .stat-like.active {
+      color: #f43f5e;
+      background-color: #fee2e2;
+    }
+    
+    .stat-like.active i {
+      transform: scale(1.15);
+    }
+    
+    .stat-comment i {
+      color: #8b5cf6;
+    }
+    
+    /* 统计数值的动画效果 */
+    .stat-value {
+      transition: all 0.3s ease;
+    }
+    
+    /* 工具提示样式 */
+    .stat-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-5px);
+      background-color: #334155;
+      color: white;
+      font-size: 0.75rem;
+      padding: 5px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      z-index: 20;
+    }
+    
+    .stat-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px;
+      border-style: solid;
+      border-color: #334155 transparent transparent transparent;
+    }
+    
+    .stat-item:hover .stat-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    /* 复制和收藏按钮样式优化 */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(37, 99, 235, 0.2);
+    }
+    
+    .copy-btn i {
+      margin-right: 5px;
+    }
+    
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    }
+    
+    .copy-btn:active {
+      transform: translateY(0);
+    }
+    
+    .bookmark-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background-color: #f1f5f9;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+    
+    .bookmark-btn:hover {
+      background-color: #e2e8f0;
+      color: #334155;
+    }
+    
+    .bookmark-btn.active {
+      background-color: #dbeafe;
+      color: #2563eb;
+    }
+    
+    .bookmark-btn i {
+      font-size: 1.125rem;
+    }
+    
+    .toggle-dark-mode {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    
+    .toggle-dark-mode svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0; /* 将菜单放到右边 */
+      background-color: white;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .dropdown-content a {
+      color: #111827;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f3f4f6;
+      color: #2563eb;
+    }
+
+    .show {
+      display: block;
+    }
+
+    /* 添加新的样式 */
+    .category-group {
+      position: relative;
+      width: 100%;
+    }
+
+    .category-parent {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.5rem;
+      text-align: left;
+      transition: all 0.15s ease;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+      color: #4b5563;
+      cursor: pointer;
+    }
+
+    .category-parent:hover {
+      background-color: #f3f4f6;
+    }
+
+    .subcategory-menu {
+      display: none;
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 0.5rem;
+      min-width: 200px;
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+
+    .category-group:hover .subcategory-menu {
+      display: block;
+    }
+
+    .subcategory-item {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      color: #4b5563;
+      border-radius: 0.375rem;
+      transition: all 0.15s ease;
+    }
+
+    .subcategory-item:hover {
+      background-color: #f3f4f6;
+      color: #2563eb;
+    }
+
+    .ml-auto {
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center py-3">
+        <a href="#" class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+            <i class="ri-sword-line text-white text-xl"></i>
+          </div>
+          <span class="font-bold text-lg text-gray-800">Delta Arsenal</span>
+        </a>
+        
+        <div class="hidden md:block">
+          <div class="relative">
+            <input type="text" placeholder="搜索改枪码或武器..." 
+                  class="w-64 px-4 py-2 rounded-lg bg-gray-100 focus:bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button class="absolute right-3 top-2 text-gray-400">
+              <i class="ri-search-line"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <button class="md:hidden text-gray-600">
+            <i class="ri-search-line text-xl"></i>
+          </button>
+          <a href="#" class="text-gray-600 hover:text-gray-800">
+            <i class="ri-notification-3-line text-xl"></i>
+          </a>
+          <a href="warehouse.html" class="hidden md:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            仓库
+          </a>
+          <div id="toggle-dark-mode" class="toggle-dark-mode">
+            <svg id="sun-icon" t="1742288008662" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="13002" width="24" height="24">
+              <path d="M512 496m-201 0a201 201 0 1 0 402 0 201 201 0 1 0-402 0Z" fill="#F9CC12" p-id="13003"></path>
+              <path d="M512 717c-59 0-114.5-23-156.2-64.7C314 610.6 291 555.1 291 496s23-114.5 64.7-156.2S453 275.1 512 275.1s114.5 23 156.2 64.7S733 437 733 496s-23 114.5-64.7 156.2C626.5 694 571 717 512 717z m0-401.9c-99.8 0-181 81.2-181 181s81.2 181 181 181 181-81.2 181-181-81.2-181-181-181zM512 233.3c-13.9 0-25.3-11.4-25.3-25.3V88.9c0-13.9 11.4-25.3 25.3-25.3s25.3 11.4 25.3 25.3v119.2c0 13.9-11.4 25.2-25.3 25.2zM326.2 310.3c-9.8 9.8-25.9 9.8-35.7 0L206.2 226c-9.8-9.8-9.8-25.9 0-35.7 9.8-9.8 25.9-9.8 35.7 0l84.3 84.3c9.9 9.8 9.9 25.9 0 35.7zM249.3 496c0 13.9-11.4 25.3-25.3 25.3H104.8c-13.9 0-25.3-11.4-25.3-25.3s11.4-25.3 25.3-25.3H224c13.9 0.1 25.3 11.5 25.3 25.3zM326.2 681.8c9.8 9.8 9.8 25.9 0 35.7l-84.3 84.3c-9.8 9.8-25.9 9.8-35.7 0-9.8-9.8-9.8-25.9 0-35.7l84.3-84.3c9.8-9.8 25.9-9.8 35.7 0zM512 758.7c13.9 0 25.3 11.4 25.3 25.3v119.2c0 13.9-11.4 25.3-25.3 25.3s-25.3-11.4-25.3-25.3V784c0-13.9 11.4-25.3 25.3-25.3zM697.8 681.8c9.8-9.8 25.9-9.8 35.7 0l84.3 84.3c9.8 9.8 9.8 25.9 0 35.7-9.8 9.8-25.9 9.8-35.7 0l-84.3-84.3c-9.9-9.8-9.9-25.9 0-35.7zM774.7 496c0-13.9 11.4-25.3 25.3-25.3h119.2c13.9 0 25.3 11.4 25.3 25.3s-11.4 25.3-25.3 25.3H800c-13.9 0-25.3-11.4-25.3-25.3zM697.8 310.3c-9.8-9.8-9.8-25.9 0-35.7l84.3-84.3c9.8-9.8 25.9-9.8 35.7 0 9.8 9.8 9.8 25.9 0 35.7l-84.3 84.3c-9.8 9.8-25.9 9.8-35.7 0z" fill="#444D68" p-id="13004"></path>
+            </svg>
+            <svg id="moon-icon" t="1742287855177" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11866" width="24" height="24" style="display: none;">
+              <path d="M566.464 429.888c0-91.328 39.744-172.8 102.528-229.44 19.136-17.216 13.376-49.216-11.648-55.424A384.192 384.192 0 0 0 475.52 144.64c-139.328 32.896-250.432 147.52-279.04 287.808a378.56 378.56 0 0 0 369.984 457.664 375.552 375.552 0 0 0 259.712-103.872c18.496-17.536 8.192-48.128-16.64-53.696a310.144 310.144 0 0 1-243.072-302.656z" fill="#2A2E31" p-id="11867"></path>
+            </svg>
+          </div>
+          <div class="dropdown">
+            <img src="https://randomuser.me/api/portraits/men/43.jpg" alt="用户头像" class="w-8 h-8 rounded-full border-2 border-white" onclick="toggleDropdown()">
+            <div id="dropdown-content" class="dropdown-content">
+              <a href="#">登录</a>
+              <a href="#">注销</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <!-- 主体内容 -->
+  <main class="container mx-auto px-4 py-6">
+    <!-- 横幅 -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-6 mb-8 relative overflow-hidden shadow-lg">
+      <div class="absolute inset-0 bg-pattern opacity-10"></div>
+      <div class="relative z-10">
+        <h1 class="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-2 md:mb-4">最强改枪码分享平台</h1>
+        <p class="text-blue-100 text-sm md:text-base lg:text-lg max-w-lg">专业的三角洲游戏改枪码社区，助您在战场上取得压倒性优势。</p>
+        <div class="mt-4 md:mt-6">
+          <button class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium text-sm md:text-base shadow-md hover:shadow-lg transition-all duration-200">
+            立即探索 <i class="ri-arrow-right-line ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 分类导航改为下拉菜单 -->
+    <div class="flex flex-wrap items-center justify-between mb-8">
+      <div class="categories-dropdown mb-4 md:mb-0">
+        <button class="categories-toggle" id="categories-toggle">
+          全部枪械 <i class="ri-arrow-down-s-line"></i>
+        </button>
+        <div class="categories-menu" id="categories-menu">
+          <!-- 一级分类 -->
+          <button class="active" data-category="all">
+            <i class="ri-apps-line"></i> 全部
+          </button>
+          
+          <!-- 二级分类 - 步枪 -->
+          <div class="category-group">
+            <button data-category="rifle" class="category-parent">
+              <i class="ri-rifle-line"></i> 步枪
+              <i class="ri-arrow-right-s-line ml-auto"></i>
+            </button>
+            <div class="subcategory-menu">
+              <button data-category="rifle-tenlong" class="subcategory-item">腾龙突击步枪</button>
+              <button data-category="rifle-asval" class="subcategory-item">AS Val突击步枪</button>
+              <button data-category="rifle-car15" class="subcategory-item">CAR-15突击步枪</button>
+              <button data-category="rifle-ptr32" class="subcategory-item">PTR-32突击步枪</button>
+              <button data-category="rifle-g3" class="subcategory-item">G3战斗步枪</button>
+              <button data-category="rifle-scarh" class="subcategory-item">SCAR-H战斗步枪</button>
+              <button data-category="rifle-ak12" class="subcategory-item">AK-12突击步枪</button>
+              <button data-category="rifle-sg552" class="subcategory-item">SG552突击步枪</button>
+              <button data-category="rifle-m7" class="subcategory-item">M7战斗步枪</button>
+              <button data-category="rifle-aug" class="subcategory-item">AUG突击步枪</button>
+              <button data-category="rifle-m16a4" class="subcategory-item">M16A4突击步枪</button>
+              <button data-category="rifle-k416" class="subcategory-item">K416突击步枪</button>
+              <button data-category="rifle-ash12" class="subcategory-item">ASh-12战斗步枪</button>
+              <button data-category="rifle-aks74u" class="subcategory-item">AKS-74U</button>
+              <button data-category="rifle-qbz95" class="subcategory-item">QBZ95-1突击步枪</button>
+              <button data-category="rifle-akm" class="subcategory-item">AKM突击步枪</button>
+              <button data-category="rifle-m4a1" class="subcategory-item">M4A1突击步枪</button>
+            </div>
+          </div>
+
+          <!-- 二级分类 - 冲锋枪 -->
+          <div class="category-group">
+            <button data-category="smg" class="category-parent">
+              <i class="ri-speed-line"></i> 冲锋枪
+              <i class="ri-arrow-right-s-line ml-auto"></i>
+            </button>
+            <div class="subcategory-menu">
+              <button data-category="smg-qcq171" class="subcategory-item">QCQ171冲锋枪</button>
+              <button data-category="smg-mp7" class="subcategory-item">MP7冲锋枪</button>
+              <button data-category="smg-warrior" class="subcategory-item">勇士冲锋枪</button>
+              <button data-category="smg-sr3m" class="subcategory-item">SR-3M紧凑突击步枪</button>
+              <button data-category="smg-smg45" class="subcategory-item">SMG-45冲锋枪</button>
+              <button data-category="smg-taurus" class="subcategory-item">野牛冲锋枪</button>
+              <button data-category="smg-uzi" class="subcategory-item">UZI冲锋枪</button>
+              <button data-category="smg-vector" class="subcategory-item">Vector冲锋枪</button>
+              <button data-category="smg-p90" class="subcategory-item">P90冲锋枪</button>
+              <button data-category="smg-mp5" class="subcategory-item">MP5冲锋枪</button>
+            </div>
+          </div>
+
+          <!-- 二级分类 - 狙击步枪 -->
+          <div class="category-group">
+            <button data-category="sniper" class="category-parent">
+              <i class="ri-sniper-line"></i> 狙击步枪
+              <i class="ri-arrow-right-s-line ml-auto"></i>
+            </button>
+            <div class="subcategory-menu">
+              <button data-category="sniper-awm" class="subcategory-item">AWM狙击步枪</button>
+              <button data-category="sniper-m700" class="subcategory-item">M700狙击步枪</button>
+              <button data-category="sniper-r93" class="subcategory-item">R93狙击步枪</button>
+              <button data-category="sniper-sv98" class="subcategory-item">SV-98狙击步枪</button>
+              <button data-category="sniper-m40a5" class="subcategory-item">M40A5狙击步枪</button>
+              <button data-category="sniper-vss" class="subcategory-item">VSS狙击步枪</button>
+              <button data-category="sniper-hk417" class="subcategory-item">HK417狙击步枪</button>
+            </div>
+          </div>
+<!-- 二级分类 - 精确射手步枪 -->
+<div class="category-group">
+  <button data-category="dmr" class="category-parent">
+    <i class="ri-focus-3-line"></i> 精确射手步枪
+    <i class="ri-arrow-right-s-line ml-auto"></i>
+  </button>
+  <div class="subcategory-menu">
+    <button data-category="dmr-psg1" class="subcategory-item">PSG-1射手步枪</button>
+    <button data-category="dmr-sr9" class="subcategory-item">SR9射手步枪</button>
+    <button data-category="dmr-sr25" class="subcategory-item">SR-25射手步枪</button>
+    <button data-category="dmr-sks" class="subcategory-item">SKS射手步枪</button>
+    <button data-category="dmr-m14" class="subcategory-item">M14射手步枪</button>
+    <button data-category="dmr-svd" class="subcategory-item">SVD狙击步枪</button>
+    <button data-category="dmr-vss" class="subcategory-item">VSS射手步枪</button>
+    <button data-category="dmr-mini14" class="subcategory-item">Mini-14射手步枪</button>
+  </div>
+</div>
+          <!-- 二级分类 - 霰弹枪 -->
+          <div class="category-group">
+            <button data-category="shotgun" class="category-parent">
+              <i class="ri-sword-line"></i> 霰弹枪
+              <i class="ri-arrow-right-s-line ml-auto"></i>
+            </button>
+            <div class="subcategory-menu">
+              <button data-category="shotgun-m1014" class="subcategory-item">M1014霰弹枪</button>
+              <button data-category="shotgun-m870" class="subcategory-item">M870霰弹枪</button>
+              <button data-category="shotgun-saiga" class="subcategory-item">Saiga霰弹枪</button>
+              <button data-category="shotgun-spas12" class="subcategory-item">SPAS12霰弹枪</button>
+              <button data-category="shotgun-sv10" class="subcategory-item">SV-10霰弹枪</button>
+            </div>
+          </div>
+
+          <!-- 二级分类 - 轻机枪 -->
+          <div class="category-group">
+            <button data-category="lmg" class="category-parent">
+              <i class="ri-sword-line"></i> 轻机枪
+              <i class="ri-arrow-right-s-line ml-auto"></i>
+            </button>
+            <div class="subcategory-menu">
+              <button data-category="lmg-qjb201" class="subcategory-item">QJB201轻机枪</button>
+              <button data-category="lmg-m249" class="subcategory-item">M249轻机枪</button>
+              <button data-category="lmg-m240" class="subcategory-item">M240轻机枪</button>
+              <button data-category="lmg-pkp" class="subcategory-item">PKP轻机枪</button>
+              <button data-category="lmg-mg36" class="subcategory-item">MG36轻机枪</button>
+            </div>
+          </div>
+
+          <!-- 二级分类 - 手枪 -->
+          <div class="category-group">
+            <button data-category="pistol" class="category-parent">
+              <i class="ri-pistol-line"></i> 手枪
+              <i class="ri-arrow-right-s-line ml-auto"></i>
+            </button>
+            <div class="subcategory-menu">
+              <button data-category="pistol-m1911" class="subcategory-item">M1911</button>
+              <button data-category="pistol-glock" class="subcategory-item">Glock</button>
+              <button data-category="pistol-vss" class="subcategory-item">VSS</button>
+              <button data-category="pistol-g18" class="subcategory-item">G18</button>
+              <button data-category="pistol-p226" class="subcategory-item">P226</button>
+              <button data-category="pistol-qsz92" class="subcategory-item">QSZ92</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 新增的卡战备推荐标签，紧挨着"全部枪械" -->
+      <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition ml-2">
+        卡战备推荐
+      </button>
+      
+      <div class="sort-dropdown">
+        <button id="sort-toggle" class="sort-toggle">
+          <i class="ri-fire-line icon"></i>最热门<i class="ri-arrow-down-s-line arrow"></i>
+        </button>
+        
+        <div id="sort-menu" class="sort-menu">
+          <button data-sort="hot" class="active">
+            <i class="ri-fire-line"></i>最热门
+          </button>
+          <button data-sort="new">
+            <i class="ri-time-line"></i>最新发布
+          </button>
+          <button data-sort="downloads">
+            <i class="ri-download-line"></i>下载最多
+          </button>
+          <button data-sort="rating">
+            <i class="ri-thumb-up-line"></i>好评最多
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 添加背景遮罩 -->
+    <div class="categories-backdrop" id="categories-backdrop"></div>
+    
+    <!-- 改枪码卡片区 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+      <!-- 步枪卡片 -->
+      <div class="gun-card" data-category="rifle">
+        <div class="relative">
+          <a href="kapian.html">  <!-- 添加链接 -->
+            <img src="M4A1.png" alt="M4A1" class="w-full h-48 object-cover">
+          </a>
+          <div class="gun-type-tag">
+            <i class="ri-rifle-line"></i><span>步枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">M4A1神级压枪配置</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">枪神小李</div>
+              <div class="author-rank">LV.18 资深玩家</div>
+            </div>
+            <button class="follow-btn">关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">96</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">88</div>
+              <div class="label">稳定性</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">92</div>
+              <div class="label">射速</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">M4A1-X7YTQP3N-V9KL2</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">2.3k</span>
+              <div class="stat-tooltip">2,347 人下载</div>
+            </div>
+            <div class="stat-item stat-like">
+              <i class="ri-heart-line"></i>
+              <span class="stat-value">845</span>
+              <div class="stat-tooltip">845 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">32</span>
+              <div class="stat-tooltip">32 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn">
+              <i class="ri-bookmark-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 狙击步枪卡片 -->
+      <div class="gun-card" data-category="sniper">
+        <div class="relative">
+          <img src="https://via.placeholder.com/400x200" alt="AWP" class="w-full h-48 object-cover">
+          <div class="gun-type-tag">
+            <i class="ri-sniper-line"></i><span>狙击步枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">AWP一枪毙命配置</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">狙神阿珍</div>
+              <div class="author-rank">LV.22 王牌玩家</div>
+            </div>
+            <button class="follow-btn">关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">100</div>
+              <div class="label">威力</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">95</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">70</div>
+              <div class="label">操控性</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">AWP-L9KZM3X8-QWE71</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">1.8k</span>
+              <div class="stat-tooltip">1,817 人下载</div>
+            </div>
+            <div class="stat-item stat-like">
+              <i class="ri-heart-line"></i>
+              <span class="stat-value">652</span>
+              <div class="stat-tooltip">652 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">51</span>
+              <div class="stat-tooltip">51 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn">
+              <i class="ri-bookmark-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 添加第三个卡片 - 冲锋枪 -->
+      <div class="gun-card" data-category="smg">
+        <div class="relative">
+          <img src="yongshi.png" alt="MP5" class="w-full h-48 object-cover">
+          <div class="gun-type-tag">
+            <i class="ri-speed-line"></i><span>冲锋枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">MP5超强横扫配装</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">暗影杀手</div>
+              <div class="author-rank">LV.23 专业选手</div>
+            </div>
+            <button class="follow-btn">关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">89</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">95</div>
+              <div class="label">稳定性</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">98</div>
+              <div class="label">射速</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">MP5-KJH67L2-TR54X</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">3.1k</span>
+              <div class="stat-tooltip">3,142 人下载</div>
+            </div>
+            <div class="stat-item stat-like active">
+              <i class="ri-heart-fill"></i>
+              <span class="stat-value">725</span>
+              <div class="stat-tooltip">725 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">46</span>
+              <div class="stat-tooltip">46 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn">
+              <i class="ri-bookmark-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 手枪卡片 -->
+      <div class="gun-card" data-category="pistol">
+        <div class="relative">
+          <img src="https://via.placeholder.com/400x200" alt="Glock-18" class="w-full h-48 object-cover">
+          <div class="gun-type-tag">
+            <i class="ri-pistol-line"></i><span>手枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">Glock-18精准点射配装</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">枪林弹雨</div>
+              <div class="author-rank">LV.18 战术大师</div>
+            </div>
+            <button class="follow-btn">关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">93</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">91</div>
+              <div class="label">稳定性</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">81</div>
+              <div class="label">射速</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">GLK18-C7MR92K-SD18A</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">1.5k</span>
+              <div class="stat-tooltip">1,521 人下载</div>
+            </div>
+            <div class="stat-item stat-like">
+              <i class="ri-heart-line"></i>
+              <span class="stat-value">384</span>
+              <div class="stat-tooltip">384 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">27</span>
+              <div class="stat-tooltip">27 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn">
+              <i class="ri-bookmark-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 精确射手步枪卡片 -->
+      <div class="gun-card" data-category="marksman">
+        <div class="relative">
+          <img src="https://via.placeholder.com/400x200" alt="M110" class="w-full h-48 object-cover">
+          <div class="gun-type-tag">
+            <i class="ri-focus-3-line"></i><span>精确射手步枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">M110单发精确配装</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">幽灵狙击手</div>
+              <div class="author-rank">LV.27 精英狙击手</div>
+            </div>
+            <button class="follow-btn">关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">98</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">93</div>
+              <div class="label">稳定性</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">55</div>
+              <div class="label">射速</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">M110-SNP78QV-H23FM</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">2.8k</span>
+              <div class="stat-tooltip">2,843 人下载</div>
+            </div>
+            <div class="stat-item stat-like active">
+              <i class="ri-heart-fill"></i>
+              <span class="stat-value">912</span>
+              <div class="stat-tooltip">912 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">63</span>
+              <div class="stat-tooltip">63 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn active">
+              <i class="ri-bookmark-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 轻机枪卡片 -->
+      <div class="gun-card" data-category="lmg">
+        <div class="relative">
+          <img src="https://via.placeholder.com/400x200" alt="M249" class="w-full h-48 object-cover">
+          <div class="gun-type-tag">
+            <i class="ri-sword-line"></i><span>轻机枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">M249火力压制配装</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/men/28.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">弹雨封锁者</div>
+              <div class="author-rank">LV.31 火力支援</div>
+            </div>
+            <button class="follow-btn">已关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">72</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">78</div>
+              <div class="label">稳定性</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">99</div>
+              <div class="label">射速</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">M249-LMG52HT-Y94KX</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">4.2k</span>
+              <div class="stat-tooltip">4,231 人下载</div>
+            </div>
+            <div class="stat-item stat-like">
+              <i class="ri-heart-line"></i>
+              <span class="stat-value">1.3k</span>
+              <div class="stat-tooltip">1,347 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">95</span>
+              <div class="stat-tooltip">95 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn">
+              <i class="ri-bookmark-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 霰弹枪卡片 -->
+      <div class="gun-card" data-category="shotgun">
+        <div class="relative">
+          <img src="https://via.placeholder.com/400x200" alt="M1014" class="w-full h-48 object-cover">
+          <div class="gun-type-tag">
+            <i class="ri-suitcase-line"></i><span>霰弹枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">M1014近战清扫配装</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/men/15.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">近战大师</div>
+              <div class="author-rank">LV.25 突击高手</div>
+            </div>
+            <button class="follow-btn">关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">65</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">68</div>
+              <div class="label">稳定性</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">75</div>
+              <div class="label">射速</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">M1014-SG63BP-L31ZQ</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">2.1k</span>
+              <div class="stat-tooltip">2,134 人下载</div>
+            </div>
+            <div class="stat-item stat-like">
+              <i class="ri-heart-line"></i>
+              <span class="stat-value">567</span>
+              <div class="stat-tooltip">567 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">41</span>
+              <div class="stat-tooltip">41 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn">
+              <i class="ri-bookmark-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 添加AK47卡片 -->
+      <div class="gun-card" data-category="rifle">
+        <div class="relative">
+          <img src="https://via.placeholder.com/400x200" alt="AK47" class="w-full h-48 object-cover">
+          <div class="gun-type-tag">
+            <i class="ri-rifle-line"></i><span>步枪</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+            <h3 class="text-white text-lg font-bold truncate">AK47经典配置</h3>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="author-info">
+            <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="作者头像" class="avatar">
+            <div class="author-details">
+              <div class="author-name">枪神小张</div>
+              <div class="author-rank">LV.20 资深玩家</div>
+            </div>
+            <button class="follow-btn">关注</button>
+          </div>
+          
+          <div class="gun-stats">
+            <div class="gun-stat-item">
+              <div class="value">90</div>
+              <div class="label">精准度</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">85</div>
+              <div class="label">稳定性</div>
+            </div>
+            <div class="gun-stat-item">
+              <div class="value">80</div>
+              <div class="label">射速</div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">改枪码</div>
+            <code class="block text-sm font-mono bg-gray-100 p-2 rounded select-all">AK47-XYZ12345-ABCDE</code>
+          </div>
+        </div>
+        
+        <div class="card-footer flex justify-between items-center">
+          <div class="social-stats">
+            <div class="stat-item stat-download">
+              <i class="ri-download-line"></i>
+              <span class="stat-value">1.2k</span>
+              <div class="stat-tooltip">1,200 人下载</div>
+            </div>
+            <div class="stat-item stat-like">
+              <i class="ri-heart-line"></i>
+              <span class="stat-value">300</span>
+              <div class="stat-tooltip">300 人喜欢</div>
+            </div>
+            <div class="stat-item stat-comment">
+              <i class="ri-chat-1-line"></i>
+              <span class="stat-value">15</span>
+              <div class="stat-tooltip">15 条评论</div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="copy-btn">
+              <i class="ri-file-copy-line"></i> 复制
+            </button>
+            <button class="bookmark-btn">
+              <i class="ri-bookmark-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- 页脚 -->
+  <footer class="bg-gray-800 text-gray-300 py-8">
+    <div class="container mx-auto px-4 text-center">
+      <div class="flex justify-center space-x-4 mb-4">
+        <a href="#" class="text-gray-400 hover:text-white transition"><i class="ri-discord-line text-xl"></i></a>
+        <a href="#" class="text-gray-400 hover:text-white transition"><i class="ri-twitter-x-line text-xl"></i></a>
+        <a href="#" class="text-gray-400 hover:text-white transition"><i class="ri-youtube-line text-xl"></i></a>
+      </div>
+      <p>© 2023 Delta Arsenal. 保留所有权利</p>
+    </div>
+  </footer>
+  
+  <!-- 修复JS代码 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 分类下拉菜单
+      const toggleBtn = document.getElementById('categories-toggle');
+      const menuEl = document.getElementById('categories-menu');
+      const backdropEl = document.getElementById('categories-backdrop');
+      
+      // 确保元素存在
+      if (!toggleBtn || !menuEl) {
+        console.error('无法找到下拉菜单元素');
+        return;
+      }
+      
+      // 点击切换下拉菜单
+      toggleBtn.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // 切换菜单显示状态
+        if (menuEl.classList.contains('show')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      };
+      
+      // 打开菜单函数
+      function openMenu() {
+        toggleBtn.classList.add('active');
+        menuEl.classList.add('show');
+        if (backdropEl) backdropEl.classList.add('show');
+      }
+      
+      // 关闭菜单函数
+      function closeMenu() {
+        toggleBtn.classList.remove('active');
+        menuEl.classList.remove('show');
+        if (backdropEl) backdropEl.classList.remove('show');
+      }
+      
+      // 点击背景关闭菜单
+      if (backdropEl) {
+        backdropEl.onclick = closeMenu;
+      }
+      
+      // 点击分类选项
+      const categoryBtns = menuEl.querySelectorAll('button');
+      categoryBtns.forEach(btn => {
+        btn.onclick = function() {
+          // 更新选中状态
+          categoryBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          // 更新显示文本
+          const categoryName = this.textContent.trim();
+          toggleBtn.innerHTML = categoryName + ' <i class="ri-arrow-down-s-line"></i>';
+          
+          // 关闭菜单
+          closeMenu();
+          
+          // 筛选卡片
+          filterCards(this.getAttribute('data-category'));
+        };
+      });
+      
+      // 点击其他区域关闭菜单
+      document.addEventListener('click', function(e) {
+        if (menuEl.classList.contains('show') && 
+            !toggleBtn.contains(e.target) && 
+            !menuEl.contains(e.target)) {
+          closeMenu();
+        }
+      });
+      
+      // 筛选卡片
+      function filterCards(category) {
+        const cards = document.querySelectorAll('.gun-card');
+        cards.forEach(card => {
+          if (category === 'all' || card.getAttribute('data-category') === category) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+      
+      // 复制按钮
+      document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.onclick = function() {
+          const code = this.closest('.gun-card').querySelector('code').textContent;
+          navigator.clipboard.writeText(code)
+            .then(() => {
+              this.innerHTML = '<i class="ri-check-line"></i> 已复制';
+              setTimeout(() => {
+                this.innerHTML = '<i class="ri-file-copy-line"></i> 复制';
+              }, 2000);
+            })
+            .catch(err => {
+              console.error('复制失败:', err);
+              alert('复制失败，请手动选择并复制代码');
+            });
+        };
+      });
+      
+      // 关注按钮
+      document.querySelectorAll('.follow-btn').forEach(btn => {
+        btn.onclick = function() {
+          if(this.textContent.trim() === '关注') {
+            this.textContent = '已关注';
+            this.style.backgroundColor = '#dbeafe';
+            this.style.color = '#2563eb';
+          } else {
+            this.textContent = '关注';
+            this.style.backgroundColor = '#f3f4f6';
+            this.style.color = '#4b5563';
+          }
+        };
+      });
+      
+      // 新增排序下拉菜单交互
+      const sortToggle = document.getElementById('sort-toggle');
+      const sortMenu = document.getElementById('sort-menu');
+      
+      if (sortToggle && sortMenu) {
+        // 切换排序菜单
+        sortToggle.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // 如果分类菜单是打开的，先关闭它
+          if (menuEl && menuEl.classList.contains('show')) {
+            closeMenu();
+          }
+          
+          // 切换排序菜单
+          this.classList.toggle('active');
+          sortMenu.classList.toggle('show');
+        };
+        
+        // 点击排序选项
+        const sortButtons = sortMenu.querySelectorAll('button');
+        sortButtons.forEach(btn => {
+          btn.onclick = function() {
+            // 更新选中状态
+            sortButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 更新显示文本 - 去掉"排序方式:"前缀
+            const sortMethod = this.textContent.trim();
+            const sortIcon = this.querySelector('i').cloneNode(true);
+            sortToggle.innerHTML = '';
+            sortToggle.appendChild(sortIcon);
+            sortToggle.appendChild(document.createTextNode(sortMethod));
+            sortToggle.appendChild(document.createElement('i')).className = 'ri-arrow-down-s-line arrow';
+            
+            // 关闭菜单
+            sortToggle.classList.remove('active');
+            sortMenu.classList.remove('show');
+            
+            // TODO: 这里可以添加实际排序逻辑
+            // sortCards(this.getAttribute('data-sort'));
+          };
+        });
+        
+        // 点击其他区域关闭排序菜单
+        document.addEventListener('click', function(e) {
+          if (sortMenu.classList.contains('show') && 
+              !sortToggle.contains(e.target) && 
+              !sortMenu.contains(e.target)) {
+            sortToggle.classList.remove('active');
+            sortMenu.classList.remove('show');
+          }
+        });
+      }
+      
+      // 添加统计项交互
+      document.querySelectorAll('.stat-like').forEach(item => {
+        item.addEventListener('click', function() {
+          this.classList.toggle('active');
+          
+          // 修改图标
+          const icon = this.querySelector('i');
+          if (this.classList.contains('active')) {
+            icon.className = 'ri-heart-fill';
+            
+            // 增加点赞数
+            const valueSpan = this.querySelector('.stat-value');
+            let value = parseInt(valueSpan.textContent);
+            valueSpan.textContent = (value + 1).toString();
+            
+            // 更新工具提示
+            const tooltip = this.querySelector('.stat-tooltip');
+            tooltip.textContent = `${value + 1} 人喜欢`;
+          } else {
+            icon.className = 'ri-heart-line';
+            
+            // 减少点赞数
+            const valueSpan = this.querySelector('.stat-value');
+            let value = parseInt(valueSpan.textContent);
+            valueSpan.textContent = (value - 1).toString();
+            
+            // 更新工具提示
+            const tooltip = this.querySelector('.stat-tooltip');
+            tooltip.textContent = `${value - 1} 人喜欢`;
+          }
+        });
+      });
+      
+      // 收藏按钮交互
+      document.querySelectorAll('.bookmark-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.classList.toggle('active');
+          
+          // 修改图标
+          const icon = this.querySelector('i');
+          if (this.classList.contains('active')) {
+            icon.className = 'ri-bookmark-fill';
+          } else {
+            icon.className = 'ri-bookmark-line';
+          }
+        });
+      });
+
+      // 添加新的交互逻辑
+      const categoryGroups = document.querySelectorAll('.category-group');
+      
+      categoryGroups.forEach(group => {
+        const parentBtn = group.querySelector('.category-parent');
+        const subMenu = group.querySelector('.subcategory-menu');
+        
+        parentBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // 处理二级分类的点击事件
+          const category = this.getAttribute('data-category');
+          filterCards(category);
+        });
+        
+        group.querySelectorAll('.subcategory-item').forEach(item => {
+          item.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // 处理三级分类的点击事件
+            const category = this.getAttribute('data-category');
+            filterCards(category);
+          });
+        });
+      });
+    });
+
+    document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      const sunIcon = document.getElementById('sun-icon');
+      const moonIcon = document.getElementById('moon-icon');
+      if (document.body.classList.contains('dark-mode')) {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    });
+
+    function toggleDropdown() {
+      document.getElementById('dropdown-content').classList.toggle('show');
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.w-8')) {
+        var dropdowns = document.getElementsByClassName('dropdown-content');
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html> 
